@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import { connectMongoDB } from './db/connectMongoDB.js';
 import usersRoutes from './routes/usersRoutes.js';
+import businessesRoutes from './routes/businessesRoutes.js';
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(morgan('dev'));
 
 // 🔗 ROUTES
 app.use(usersRoutes);
+app.use(businessesRoutes);
 
 // start server ONLY after DB connection
 async function startServer() {
