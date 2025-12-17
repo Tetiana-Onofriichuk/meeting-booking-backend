@@ -1,77 +1,83 @@
-📅 Meeting Booking Backend
+# 📅 Meeting Booking Backend
 
 Backend API for a meeting booking system where clients can book appointments with business users.
 
 The project is built as a test assignment, focusing on clean architecture, validation, and booking logic with time conflict prevention.
 
+---
 
-🚀 Tech Stack
+## 🚀 Tech Stack
 
-Node.js
+- Node.js
+- Express
+- MongoDB + Mongoose
+- Celebrate + Joi (request validation)
+- bcrypt (password hashing)
+- Morgan (HTTP request logging)
 
-Express
+---
 
-MongoDB + Mongoose
+## 👥 User Roles
 
-Celebrate + Joi (request validation)
+### Client
+- Can create bookings
+- Can view, update, and cancel own bookings
 
-bcrypt (password hashing)
+### Business
+- Can receive bookings from clients
+- Appears in the list of available businesses
 
-Morgan (HTTP request logging)
+---
 
-👥 User Roles
+## 🔑 Core Features
 
-Client
+### Users
+- Create, update, delete users
+- Separate roles: client and business
+- Input validation with Celebrate + Joi
 
-Can create bookings
+### Business Users
+- Retrieve list of users with role `business`
 
-Can view, update, and cancel own bookings
+### Bookings
+- Create a booking for a business user
+- Update (reschedule) a booking
+- Cancel a booking
+- Prevent time conflicts:  
+  - A booking cannot overlap with another active booking for the same business
 
-Business
+---
 
-🔑 Core Features
-Users
+## 🛣️ API Endpoints
 
-Create, update, delete users
+### Users
+| Method | Endpoint       | Description            |
+|--------|----------------|------------------------|
+| POST   | `/users`       | Create user            |
+| GET    | `/users`       | Get all users          |
+| GET    | `/users/:id`   | Get user by id         |
+| PATCH  | `/users/:id`   | Update user            |
+| DELETE | `/users/:id`   | Delete user            |
 
-Separate roles: client and business
+### Business Users
+| Method | Endpoint         | Description                    |
+|--------|------------------|--------------------------------|
+| GET    | `/businesses`    | Get users with role business   |
 
-Input validation with celebrate + joi
+### Bookings
+| Method | Endpoint                         | Description                 |
+|--------|----------------------------------|-----------------------------|
+| POST   | `/bookings`                      | Create booking              |
+| GET    | `/bookings?clientId=...`         | Get bookings by client      |
+| GET    | `/bookings?businessId=...`       | Get bookings by business    |
+| PATCH  | `/bookings/:id`                  | Reschedule booking          |
+| DELETE | `/bookings/:id`                  | Cancel booking              |
 
-Business Users
+---
 
-Retrieve list of users with role business
+## 🧾 Example Booking Request
 
-Bookings
-
-Create a booking for a business user
-
-Update (reschedule) a booking
-
-Cancel a booking
-
-Prevent time conflicts:
-
-A booking cannot overlap with another active booking for the same business
-
-Users
-POST    /users
-GET     /users
-GET     /users/:id
-PATCH   /users/:id
-DELETE  /users/:id
-
-Business Users
-GET /businesses
-
-Bookings
-POST    /bookings
-GET     /bookings?clientId=...
-GET     /bookings?businessId=...
-PATCH   /bookings/:id
-DELETE  /bookings/:id
-
-🧾 Example Booking Request
+```json
 {
   "clientId": "CLIENT_ID",
   "businessId": "BUSINESS_ID",
@@ -80,23 +86,4 @@ DELETE  /bookings/:id
   "notes": "First meeting"
 }
 
-Appears in the list of available businesses
 
-Can receive bookings from clients
-
-
-⚙️ Environment Variables
-
-Create a .env file in the root directory:
-
-PORT=4000
-MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/meeting-booking
-
-▶️ Running the Project Locally
-npm install
-npm run dev
-
-
-Server will start on:
-
-http://localhost:4000
