@@ -1,20 +1,24 @@
-import { normalizePhoneDigits } from "../utils/normalizePhone.js";
-import { Joi, Segments } from "celebrate";
+import { Joi, Segments } from 'celebrate';
+
+export const userIdSchema = {
+  [Segments.PARAMS]: Joi.object({
+    id: Joi.string().hex().length(24).required(),
+  }),
+};
+
+export const createUserSchema = {
+  [Segments.BODY]: Joi.object({
+    role: Joi.string().valid('client', 'business').required(),
+    name: Joi.string().min(2).max(100).required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(6).required(),
+  }),
+};
 
 export const updateUserSchema = {
-	[Segments.BODY]: Joi.object({
-		name: Joi.string().min(2).allow("", null),
-		lastname: Joi.string().allow("", null),
-		city: Joi.string().allow("", null),
-		phone: Joi.string()
-			.required()
-			.custom((value, helpers) => {
-				const normalized = normalizePhoneDigits(value);
-				if (!normalized) return helpers.error("any.invalid");
-				return normalized;
-			}, "Phone normalization"),
-		warehoseNumber: Joi.string().allow("", null),
-		username: Joi.string().required(),
-		avatar: Joi.any(),
-	}),
+  [Segments.BODY]: Joi.object({
+    role: Joi.string().valid('client', 'business').optional(),
+    name: Joi.string().min(2).allow('', null),
+    email: Joi.string().email().allow('', null),
+  }).min(1),
 };

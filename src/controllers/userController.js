@@ -1,34 +1,76 @@
-import createHttpError from 'http-errors';
-import { User } from '../models/user.js';
-import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import bcrypt from 'bcrypt';
+import { User } from '../models/User.js';
 
-export const updateUserProfile = async (req, res) => {
-  const userId = req.user?._id;
-  if (!userId) throw createHttpError(404, "User not found");
-
-  let updateData = { ...req.body };
-
-  console.log(updateData)
-
-  if (req.file) {
-    const result = await saveFileToCloudinary(req.file.buffer);
-    updateData.avatar = result.secure_url;
-  }
-
-  const updatedUser = await User.findByIdAndUpdate(userId, { $set: updateData }, { new: true }).lean();
-
-  res.status(200).json(updatedUser);
-};
-
-
-export const getCurrentUser = async (req, res, next) => {
+export const createUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id);
-    if (!user) {
-      throw createHttpError(404, "User not found");
+    const { role, name, email, password } = req.body;
+
+    const exists = await User.findOne({ email });
+    if (exists) {
+      return res.status(409).json({ message: 'User already exists' });
     }
 
-    res.status(200).json(user);
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      role,
+      name,
+      email,
+      passwordHash,
+    });
+
+    res.status(201).json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find().select('-passwordHash');
+    res.json(users);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUserById = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id).select('-passwordHash');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateUser = async (req, res, next) => {
+  try {
+    const { name, email } = req.body;
+
+    const user = await User.findByIdAndUpdate(req.params.id, { name, email }, { new: true }).select('-passwordHash');
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteUser = async (req, res, next) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ message: 'User deleted successfully' });
   } catch (error) {
     next(error);
   }
