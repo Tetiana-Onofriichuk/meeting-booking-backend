@@ -1,0 +1,121 @@
+paths:
+  /top-rated:
+    get:
+      summary: Отримати список топових товарів
+      tags: [Top Rated]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Номер сторінки
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 6
+          description: Кількість елементів на сторінці
+      responses:
+        '200':
+          description: Список найкращих товарів
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+                  total:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TopRatedItem'
+        '400':
+          description: Невірні параметри запиту
+
+    post:
+      summary: Додати товар у список топових
+      tags: [Top Rated]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TopRatedCreateInput'
+      responses:
+        '201':
+          description: Товар додано у топ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopRated'
+        '404':
+          description: Товар не знайдено
+        '409':
+          description: Товар вже існує у списку топових
+        '400':
+          description: Невірні дані
+
+components:
+  schemas:
+    TopRatedCreateInput:
+      type: object
+      required:
+        - productId
+      properties:
+        productId:
+          type: string
+          description: Mongo ObjectId товару
+          pattern: '^[0-9a-fA-F]{24}$'
+          example: '67b1de0f59c91b35d71dd3cb'
+
+    TopRated:
+      type: object
+      description: Документ в колекції topRatedGoods
+      properties:
+        _id:
+          type: string
+          example: '67b1de0f59c91b35d71dd3dc'
+        productId:
+          type: string
+          example: '67b1de0f59c91b35d71dd3cb'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TopRatedItem:
+      type: object
+      description: Товар, що повертається у списку топових
+      properties:
+        _id:
+          type: string
+          example: '67b1e13f7de61d45ff8029ab'
+        name:
+          type: string
+        price:
+          type: number
+          example: 1299
+        currency:
+          type: string
+          example: 'UAH'
+        image:
+          type: string
+          example: 'https://cdn.clothica/goods/123.jpg'
+        feedbackCount:
+          type: integer
+          example: 12
+        averageRating:
+          type: number
+          example: 4.5
