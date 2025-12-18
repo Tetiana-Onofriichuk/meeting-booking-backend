@@ -1,22 +1,18 @@
-import bcrypt from 'bcrypt';
 import { User } from '../models/User.js';
 
 export const createUser = async (req, res, next) => {
   try {
-    const { role, name, email, password } = req.body;
+    const { role, name, email } = req.body;
 
     const exists = await User.findOne({ email });
     if (exists) {
       return res.status(409).json({ message: 'User already exists' });
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
-
     const user = await User.create({
       role,
       name,
       email,
-      passwordHash,
     });
 
     res.status(201).json(user);
@@ -24,7 +20,6 @@ export const createUser = async (req, res, next) => {
     next(error);
   }
 };
-
 export const getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find().select('-passwordHash');

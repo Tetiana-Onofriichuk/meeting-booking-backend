@@ -11,7 +11,7 @@ export const createUserSchema = {
     role: Joi.string().valid('client', 'business').required(),
     name: Joi.string().min(2).max(8).required(),
     email: Joi.string().email().required(),
-    password: Joi.string().min(6).required(),
+    avatarUrl: Joi.string().uri().optional(),
   }),
 };
 

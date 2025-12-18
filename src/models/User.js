@@ -19,14 +19,8 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    passwordHash: {
-      type: String,
-      required: true,
-    },
   },
-  {
-    timestamps: true,
-  },
+  { timestamps: true },
 );
 
 export const User = mongoose.model('User', userSchema);
