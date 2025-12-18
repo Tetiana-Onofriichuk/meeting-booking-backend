@@ -9,7 +9,7 @@ export const userIdSchema = {
 export const createUserSchema = {
   [Segments.BODY]: Joi.object({
     role: Joi.string().valid('client', 'business').required(),
-    name: Joi.string().min(2).max(100).required(),
+    name: Joi.string().min(2).max(8).required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(6).required(),
   }),
