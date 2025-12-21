@@ -1,7 +1,13 @@
 import { Router } from 'express';
 import { celebrate } from 'celebrate';
 
-import { createBooking, getBookings, updateBooking, cancelBooking } from '../controllers/bookingController.js';
+import {
+  createBooking,
+  getBookings,
+  updateBooking,
+  cancelBooking,
+  deleteBooking,
+} from '../controllers/bookingController.js';
 
 import { createBookingSchema, bookingIdSchema, updateBookingSchema } from '../validations/bookingValidation.js';
 
@@ -21,6 +27,7 @@ router.patch(
   updateBooking,
 );
 
-router.delete('/bookings/:id', celebrate(bookingIdSchema), cancelBooking);
+router.patch('/bookings/:id/cancel', celebrate(bookingIdSchema), cancelBooking);
+router.delete('/bookings/:id', celebrate(bookingIdSchema), deleteBooking);
 
 export default router;

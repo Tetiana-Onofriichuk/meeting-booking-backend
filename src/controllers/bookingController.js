@@ -118,15 +118,36 @@ export const cancelBooking = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const booking = await Booking.findById(id);
+    const booking = await Booking.findByIdAndUpdate(
+      id,
+      {
+        status: 'canceled',
+        canceledAt: new Date(),
+      },
+      { new: true },
+    ).populate('clientId businessId');
+
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' });
     }
 
-    booking.status = 'canceled';
-    await booking.save();
+    res.json(booking);
+  } catch (error) {
+    next(error);
+  }
+};
 
-    res.json({ message: 'Booking canceled successfully' });
+export const deleteBooking = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const booking = await Booking.findByIdAndDelete(id);
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
